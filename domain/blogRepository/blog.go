@@ -1,4 +1,6 @@
-package blog
+package blogRepository
+
+import "github.com/graphql-go/graphql"
 
 type Blog struct {
 	ID     int
@@ -7,5 +9,20 @@ type Blog struct {
 }
 
 type BlogRepository interface {
-	GetAll() []Blog
+	GetAll() ([]Blog, error)
 }
+
+var BlogType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "blog",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"title": &graphql.Field{
+			Type: graphql.String,
+		},
+		"author": &graphql.Field{
+			Type: graphql.String,
+		},
+	},
+})
