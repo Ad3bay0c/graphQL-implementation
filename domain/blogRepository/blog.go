@@ -4,14 +4,15 @@ import "github.com/graphql-go/graphql"
 
 type Blog struct {
 	ID     string `json:"id"`
-	Title  string
-	Author string
+	Title  string `json:"title"`
+	Author string `json:"author,omitempty"`
 }
 
 type BlogRepository interface {
 	GetAll() ([]Blog, error)
 	GetByID(id string) (*Blog, error)
 	CreateBlog(blog Blog) (*Blog, error)
+	UpdateBlog(blog Blog) (*Blog, error)
 }
 
 var BlogType = graphql.NewObject(graphql.ObjectConfig{
