@@ -28,3 +28,8 @@ func (db *blogDB) CreateBlog(blog Blog) (*Blog, error) {
 	_, err := db.DB.Exec("INSERT INTO blog(id, title, author) VALUES($1, $2, $3)", blog.ID, blog.Title, blog.Author)
 	return &blog, err
 }
+
+func (db *blogDB) UpdateBlog(blog Blog) (*Blog, error) {
+	_, err := db.DB.Exec("UPDATE blog SET title=$1, author=$2 WHERE id=$3", blog.Title, blog.Author, blog.ID)
+	return &blog, err
+}
