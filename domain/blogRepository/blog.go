@@ -10,6 +10,7 @@ type Blog struct {
 
 type BlogRepository interface {
 	GetAll() ([]Blog, error)
+	GetByID(id int) (*Blog, error)
 }
 
 var BlogType = graphql.NewObject(graphql.ObjectConfig{
