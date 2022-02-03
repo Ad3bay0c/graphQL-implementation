@@ -3,6 +3,7 @@ package blogService
 import (
 	"errors"
 	domain "github.com/Ad3bay0c/graphqlTesting/domain/blogRepository"
+	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 )
 
@@ -19,6 +20,34 @@ func NewBlogService(repo domain.BlogRepository) *DefaultBlogService {
 		repo: repo,
 	}
 }
+func (s *DefaultBlogService) mutation() *graphql.Object {
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Mutation",
+		Description: "Blog Mutation",
+		Fields: graphql.Fields{
+			"create": &graphql.Field{
+				Type: domain.BlogType,
+				Args: graphql.FieldConfigArgument{
+					"title": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"author": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					blog := domain.Blog{
+						ID:     uuid.NewString(),
+						Title:  p.Args["title"].(string),
+						Author: p.Args["author"].(string),
+					}
+					return s.repo.CreateBlog(blog)
+				},
+			},
+		},
+	})
+}
+
 func (s *DefaultBlogService) rootQuery() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "query",
@@ -33,11 +62,11 @@ func (s *DefaultBlogService) rootQuery() *graphql.Object {
 				Type: domain.BlogType,
 				Args: graphql.FieldConfigArgument{
 					"id": &graphql.ArgumentConfig{
-						Type: graphql.NewNonNull(graphql.Int),
+						Type: graphql.NewNonNull(graphql.String),
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return s.repo.GetByID(p.Args["id"].(int))
+					return s.repo.GetByID(p.Args["id"].(string))
 				},
 			},
 		},
@@ -45,7 +74,8 @@ func (s *DefaultBlogService) rootQuery() *graphql.Object {
 }
 func (s *DefaultBlogService) Query(query string) (interface{}, error) {
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: s.rootQuery(),
+		Query:    s.rootQuery(),
+		Mutation: s.mutation(),
 	})
 	if err != nil {
 		return nil, errors.New("error creating schema")
