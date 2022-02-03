@@ -44,6 +44,28 @@ func (s *DefaultBlogService) mutation() *graphql.Object {
 					return s.repo.CreateBlog(blog)
 				},
 			},
+			"update": &graphql.Field{
+				Type: domain.BlogType,
+				Args: graphql.FieldConfigArgument{
+					"title": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+					"author": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.String),
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					blog := domain.Blog{
+						ID:     p.Args["id"].(string),
+						Title:  p.Args["title"].(string),
+						Author: p.Args["author"].(string),
+					}
+					return s.repo.UpdateBlog(blog)
+				},
+			},
 		},
 	})
 }
