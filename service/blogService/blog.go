@@ -23,19 +23,29 @@ func (s *DefaultBlogService) rootQuery() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: "query",
 		Fields: graphql.Fields{
-			"list": &graphql.Field{
+			"blogs": &graphql.Field{
 				Type: graphql.NewList(domain.BlogType),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return []domain.Blog{{ID: 1, Title: "First result"}, {ID: 2, Title: "Second Result"}}, nil
+					return s.repo.GetAll()
+				},
+			},
+			"blog": &graphql.Field{
+				Type: domain.BlogType,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.NewNonNull(graphql.Int),
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return s.repo.GetByID(p.Args["id"].(int))
 				},
 			},
 		},
 	})
 }
 func (s *DefaultBlogService) Query(query string) (interface{}, error) {
-	rootQuery := s.rootQuery()
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: rootQuery,
+		Query: s.rootQuery(),
 	})
 	if err != nil {
 		return nil, errors.New("error creating schema")
