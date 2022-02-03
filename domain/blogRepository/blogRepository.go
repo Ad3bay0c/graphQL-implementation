@@ -1,15 +1,25 @@
 package blogRepository
 
-import "database/sql"
+import (
+	"github.com/jmoiron/sqlx"
+)
 
 type blogDB struct {
-	DB *sql.DB
+	DB *sqlx.DB
 }
 
-func NewBlogDB(db *sql.DB) *blogDB {
+func NewBlogDB(db *sqlx.DB) *blogDB {
 	return &blogDB{DB: db}
 }
 
 func (db *blogDB) GetAll() ([]Blog, error) {
-	return []Blog{}, nil
+	var blog []Blog
+	err := db.DB.Select(&blog, "SELECT * FROM blog")
+	return blog, err
+}
+
+func (db *blogDB) GetByID(id int) (*Blog, error) {
+	var blog Blog
+	err := db.DB.Get(&blog, "SELECT * FROM blog WHERE id=?", id)
+	return &blog, err
 }
