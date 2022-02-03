@@ -1,4 +1,4 @@
-package blog
+package blogRepository
 
 import "database/sql"
 
@@ -10,6 +10,6 @@ func NewBlogDB(db *sql.DB) *blogDB {
 	return &blogDB{DB: db}
 }
 
-func GetAll() []Blog {
-	return []Blog{}
+func (db *blogDB) GetAll() ([]Blog, error) {
+	return []Blog{}, nil
 }
