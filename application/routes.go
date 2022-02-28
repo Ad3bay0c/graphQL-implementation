@@ -19,7 +19,6 @@ func defineRoutes(r *gin.Engine, db *sqlx.DB) {
 	})
 	r.POST("/graphql", b.GraphQuery)
 }
-
 func SetupRouter() *gin.Engine {
 	router := gin.New()
 	db, err := sqlx.Connect("sqlite3", "./blog.db")
